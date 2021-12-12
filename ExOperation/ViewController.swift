@@ -8,12 +8,21 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+  
   override func viewDidLoad() {
     super.viewDidLoad()
-    // Do any additional setup after loading the view.
+    
+    let queue = OperationQueue()
+
+    let fileURL = URL(fileURLWithPath: "..")
+    
+    let contentImportOperation = ContentImportOperation(itemProvider: NSItemProvider(contentsOf: fileURL)!)
+    contentImportOperation.completionBlock = { print("Importing completed!") }
+
+    let contentUploadOperation = ContentUploadOperation(itemProvider: NSItemProvider(contentsOf: fileURL)!)
+    contentUploadOperation.addDependency(contentImportOperation)
+    contentUploadOperation.completionBlock = { print("Uploading completed!") }
+
+    queue.addOperations([contentUploadOperation, contentImportOperation], waitUntilFinished: true)
   }
-
-
 }
-
